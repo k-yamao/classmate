@@ -1,0 +1,86 @@
+<ons-toolbar>
+    <div class="left"></div>
+    <div class="center">設定</div>
+</ons-toolbar>
+<ons-page>
+    <div class="settings-header">プロフィール</div>
+    <ons-list modifier="inset" class="settings-list">
+        <ons-list-item modifier="chevron" ng-click="pushProfileEdit()">
+        プロフィール編集
+        </ons-list-item>
+    </ons-list>
+    <div class="settings-header">インフォメーション</div>
+    <ons-list modifier="inset" class="settings-list">
+        <ons-list-item modifier="chevron" ng-click="agreement()">
+        利用規約
+        </ons-list-item>
+        <ons-list-item modifier="chevron" ng-click="privacy()">
+        プライバシーポリシー
+        </ons-list-item>
+        <ons-list-item modifier="chevron" ng-click="faq()">
+        FAQ
+        </ons-list-item>
+        <!-- ons-list-item modifier="chevron">
+        お問い合わせ
+        </ons-list-item -->
+    </ons-list>
+    <br>
+    <ons-list modifier="inset" class="settings-list">
+        <ons-list-item modifier="tappable" ng-click="signout()">
+            <ons-icon icon="ion-log-out" style="opacity: 0.8"></ons-icon>
+            サインアウト
+        </ons-list-item>
+    </ons-list>
+    <ons-list modifier="inset" class="settings-list">
+        <ons-list-item modifier="tappable" ng-click="removePeople()">
+        <ons-icon icon="ion-log-out" style="opacity: 0.8"></ons-icon>
+        退会
+        </ons-list-item>
+    </ons-list>
+    <br/>
+</ons-page>
+<ons-modal var="modal">
+    <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+    <br>
+    <br> ネットワークに接続してください
+</ons-modal>
+
+<style>
+.profile-wrapper {
+  padding: 16px 10px 0 10px;
+}
+
+.profile-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border: inset 1px rgba(0, 0, 0, 0.3);
+}
+
+.profile-name {
+  font-size: 18px;
+  padding: 4px 0 2px 0;
+}
+
+.profile-email {
+  font-size: 15px;
+  opacity: 0.4;
+}
+
+.switch--list-item {
+  margin-right: 0px;
+}
+
+.settings-header {
+  font-weight: 500;
+  font-size: 14px;
+  opacity: 0.4;
+  padding: 10px 0 0px 10px;
+  margin-bottom: -4px;
+}
+
+.settings-list {
+  margin-top: 10px;
+}
+</style>

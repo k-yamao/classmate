@@ -1,0 +1,65 @@
+<ons-toolbar>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
+    <div class="center">サインイン</div>
+</ons-toolbar>
+<ons-page>
+  <div class="signin-form">
+    <form novalidate name="signinForm">    
+    <input type="email" class="text-input--underbar width-full" name="mail" ng-model="people.mail" placeholder="Mail" required ng-pattern="" value="">
+    <input type="password" class="text-input--underbar width-full" name="password" ng-model="people.password" placeholder="Password" required ng-minlength="6" ng-maxlength="20" value="">
+        <div class="lucent" ng-show="signinForm.mail.$error.required" ng-if="signinForm.mail.$touched">
+    <p class="note">メールは必須です。</p>
+    </div>
+    <div class="lucent" ng-show="signinForm.mail.$error.email" ng-if="signinForm.mail.$touched">
+      <p class="note">メールアドレスは正しい形式で入力してください</p>
+    </div>
+    
+    <div class="lucent" ng-show="signinForm.password.$error.required" ng-if="signinForm.password.$touched">
+      <p class="note">パスワードは必須です。</p>
+    </div>
+    <div class="lucent" ng-show="signinForm.password.$error.minlength" ng-if="signinForm.password.$touched">
+      <p class="note">パスワードは６文字以上入力してください</p>
+    </div>
+
+    <br><br>
+    <ons-button modifier="large" class="login-button" ng-click="signin(true)">サインイン</ons-button>
+
+    <br><br>
+    <ons-button modifier="quiet" class="forgot-password" ng-click="movePage(page.password);">パスワードを忘れた場合はこちら</ons-button>
+    <ons-button modifier="quiet" class="forgot-password" ng-click="movePage(page.signup);">新規登録</ons-button>
+    
+    </form>
+  </div>
+</ons-page>
+<ons-modal var="modal">
+  <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+  <br>
+  <br> Please wait.
+</ons-modal>
+<style>
+.signin-form {
+  text-align: center;
+  width: 80%;
+  margin: 60px auto 0;
+}
+
+input[type=email], input[type=password] {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  outline: none;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.login-button {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.forgot-password {
+  display: block;
+  margin: 8px auto 0 auto;
+  font-size: 14px;
+}
+</style>

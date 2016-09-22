@@ -1,0 +1,154 @@
+<ons-toolbar>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
+    <div class="center">トーク</div>
+    <div class="right"></div>
+</ons-toolbar>
+<ons-page class="timeline-page">
+    <div class="timeline">
+        <ons-list>
+            <ons-list-item modifier="inset" class="list-item-container" ng-class="talkRowClass(talk.peopleID)" ng-repeat="talk in talkList">
+              <div class="list-item-left">
+                <img ng-src="{{talk.people.imageURL}}" class="avator">
+              </div>
+              <div class="list-item-right">
+                <div class="list-item-content">
+                  <div class="name">{{talk.people.nicname}}
+                    <span class="lucent">{{talk.created|customDate4|nl2br}}</span>
+                  </div>
+
+                  <span class="desc" ng-bind-html="talk.msg|nl2br"></span>
+                  <img  class="img-thumb" ng-show="talk.file.thumb.id != ''" ng-src="{{imgBaseURL}}{{talk.file.thumb.id}}">
+                </div>
+              </div>
+            </ons-list-item>
+        </ons-list>
+    </div>
+    <div class="msgbox">
+        <button class="button img-btn" ng-click="show('image.html');"><i class="fa fa-file-image-o" aria-hidden="true"></i></button>
+        <textarea class="textarea textarea--transparent msg" autocomplete="off"  placeholder="Message" ng-model="talk.msg"></textarea>
+        <button class="button send-btn" ng-click="sendMsg();">送信</button>
+    </div>
+</ons-page>
+<ons-template id="image.html">
+    <ons-dialog var="dialog" class="onsdialog" cancelable>
+        <ons-list class="dialog-image">
+            <ons-list-item modifier="tappable" ng-click="openChatPicture(1);">カメラ</ons-list-item>
+            <ons-list-item modifier="tappable" ng-click="openChatPicture(0);">アルバム</ons-list-item>
+            <ons-list-item modifier="tappable" ng-click="closeDialog();">キャンセル</ons-list-item>
+        </ons-list>
+    </ons-dialog>
+</ons-template>
+<ons-template id="next.html"></ons-template>
+<ons-modal var="modal">
+    <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+    <br>
+    <br> ネットワークに接続してください
+</ons-modal>
+
+<style> 
+    .row-me {
+        background-color: rgba(24,103,194,0.2);
+        
+    }
+    .row-etc {
+        background-color: white;
+    }
+    .img-thumb{
+        width:100%;
+    }
+    .dialog-image {
+     text-align: center;
+    }
+    .img-btn {
+        width:30px;
+        margin: 0; 
+        height:100%;
+        float: left;
+        text-align: center;
+        padding: 0px;
+        border-radius: initial;
+    }
+    .msg {
+        width:auto;
+        height:60px;
+        margin: 0; 
+        float: left;
+        position: absolute;
+        bottom: 0px;
+        left: 30px;
+        right: 50px; 
+        
+    }
+    .send-btn {
+        width:50px;
+        margin: 0; 
+        height:100%;
+        float: right;
+        font-size: 15px;
+        border-radius: initial;
+    }
+    .msgbox{
+        position: absolute;
+        bottom: 0px;  
+        width: 100%;
+        height:60px;
+        border-top: 1px solid #ddd;
+        
+    }
+    .timeline{
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 60px;
+      z-index: 0;
+      overflow: auto;
+    }
+    .list-item-container {
+      line-height: 1;
+      font-size: 14px;
+      padding: 15px 0px 15px 15px;
+      overflow: hidden;
+    }
+
+    .list-item-left {
+      width: 60px;
+      margin-right: -60px;
+      float: left;
+    }
+
+    .list-item-right {
+      width: 100%;
+      float: right;
+    }
+
+    .list-item-content {
+      margin-left: 50px;
+      margin-right: 30px;
+    }
+
+    .avator {
+      width: 40px;
+      height: 40px;
+      border-radius: 3px;
+      -webkit-border-radius: 3px;
+    }
+
+    .name {
+      font-weight: 500;
+      line-height: 16px;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .desc {
+      -webkit-user-select: auto;
+      line-height: 16px;
+
+    }
+
+    .lucent {
+      opacity: 0.4;
+      font-size: 9pt;
+    }
+</style>

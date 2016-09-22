@@ -6,6 +6,8 @@ function onDeviceReady () {
 
 var host = "localhost:3000";
 var host = "spika.local-c.com:3000";
+// 合言葉
+var watchword   = "river";
 
 // コントローラー
 module.controller('AppController', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, $element, socket) {
@@ -305,6 +307,53 @@ module.controller('AppController', function($scope, $http, $sce, $q, $anchorScro
         selectTabelPeople   : 'SELECT _id, peopleID, mail, password, nicname, imageURL, auth, token, sex, birthDay, pref, city, appeal, phrase, loging, updated, created FROM People',
         updateTabelPeople   : 'UPDATE People SET ',
         deleteTabelPeople   : 'DELETE FROM People',
+        
+    };
+	
+	/******************************************************************    
+     *  サインイン[signin.html]
+     *******************************************************************/
+    $scope.signin = function(modalFlag){
+
+       
+        // パスワード
+        if (angular.isUndefined($scope.people.password) || $scope.people.password == ""){
+           
+			ons.notification.alert({
+          		title  : '',
+          		message: '合言葉を確認しください',
+          		modifier: 'material'
+        	});
+            return false;
+        }
+        
+        if (modalFlag) {
+            // モーダル表示
+            modal.show();
+        }
+        
+        setTimeout(function() {
+			
+			// モーダル非表示
+			if (modalFlag) {
+				modal.hide();
+			}
+			if($scope.people.password == watchword){
+				// DBへ認証OKを保存
+				
+				
+				
+			} else {
+				ons.notification.alert({
+					title  : '',
+					message: '合言葉が違います、だれかに聞いて？,
+					modifier: 'material'
+        		});
+				
+			}
+			
+			
+		}, 3000);
         
     };
     
@@ -612,106 +661,7 @@ module.controller('AppController', function($scope, $http, $sce, $q, $anchorScro
         );
     };
     
-    /******************************************************************    
-     *  サインイン[signin.html]
-     *******************************************************************/
-    $scope.signin = function(modalFlag){
-
-        // メールチェック
-        if (angular.isUndefined($scope.people.mail)){
-           $scope.alert("メールアドレスを確認しください", true);
-           return false;
-        }
-
-        // パスワード
-        if (angular.isUndefined($scope.people.password)){
-            $scope.alert("パスワードを確認しください", true);
-            return false;
-        }
-        
-        if (modalFlag) {
-            // モーダル表示
-            modal.show();
-        }
-        
-        
-        setTimeout(function() {
-            $http({
-                method: 'POST',
-                url : $scope.webAPI.URL + $scope.webAPI.people + $scope.webAPI.signin,
-                headers: { 'Content-Type': 'application/json' },
-                data: $scope.people,
-            }).success(function(data, status, headers, config) {
-                   
-                    // サインインが完了
-                    $scope.people.peopleID     = data.data.peopleID;
-                    $scope.people._id          = data.data._id;
-                    $scope.people.mail         = data.data.mail;
-                    $scope.people.password     = data.data.password;
-                    $scope.people.nicname      = data.data.nicname;
-                    $scope.people.imageURL     = angular.isUndefined(data.data.imageURL) ? 'http://file.local-c.com/uploads/mimicry/noimage.png' : data.data.imageURL;
-                    $scope.people.nicname      = data.data.nicname;
-                    $scope.people.sex          = data.data.sex;
-                    $scope.people.birthDay     = angular.isUndefined(data.data.birthDay) ? '' : data.data.birthDay;
-                    $scope.people.pref         = angular.isUndefined(data.data.pref) ? '' : data.data.pref;
-                    $scope.people.appeal       = angular.isUndefined(data.data.appeal) ? '' : data.data.appeal;
-                    $scope.people.phrase       = angular.isUndefined(data.data.phrase) ? '' : data.data.phrase;
-                    $scope.people.auth         = data.data.auth;
-                    $scope.people.token        = data.data.token;
-                    $scope.people.loging       = data.data.loging;
-                    $scope.people.updated      = data.data.updated;
-                    $scope.people.created      = data.data.created;
-                    $scope.people.boards       = angular.isUndefined(data.data.boards) ? [] : data.data.boards;
-                    // ピープルテーブルへ保存
-                    $scope.updatePeople();
-                    
-                    
-                    if (modalFlag) {
-                        // モーダル非表示
-                        modal.hide();
-                    }
-
-                    
-                    // メインページへ遷移
-                    //$scope.movePage($scope.page.main);
-                
-                    // メール、パスワードあり、認証あり、最終ログインが２ヶ月以内
-                    if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth > 0) {
-                        // メインへ遷移
-                        $scope.options.people = $scope.people;
-                        // ★★★★★メインページへ遷移★★★★★
-                        if ($scope.people.sex == "" || angular.isUndefined($scope.people.sex))  {
-                        $scope.movePage($scope.page.profileEdit, $scope.people);    
-                        } else {
-                            $scope.movePage($scope.page.main, $scope.people);
-                        }
-                    } else if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth == 0) {
-                        // 認証確認
-                        $scope.movePage($scope.page.auth);
-                    } else {
-                        // トップページでボタンを表示
-                        $scope.signinStatus = true;
-                        $scope.$apply();   
-                    }
-
-            }).error(function(data, status, headers, config) {
-                
-                // モーダル非表示
-                modal.hide();
-                
-                
-                if (!$scope.signoutFlag) {
-                    $scope.alert('サインインに失敗しました。',true);
-                } 
-                //     
-                
-                // トップページでボタンを表示
-                $scope.signinStatus = true;
-                //$scope.$apply();
-            });
-       }, 3000);
-        
-    };
+    
     /******************************************************************    
      *  パスワード初期化[password.html]
      *******************************************************************/

@@ -1,0 +1,90 @@
+<ons-page>
+<div class="login-form">
+    <div class="logo"></div>
+    <br>
+    <br>
+    <br>
+    <br>
+	<div class="signin-form">
+    <form novalidate name="signinForm">    
+    
+    <input type="password" class="text-input--underbar width-full" name="password" ng-model="people.password" placeholder="合言葉を入力！！　" required ng-maxlength="20" value="">
+    <div class="lucent" ng-show="signinForm.password.$error.required" ng-if="signinForm.password.$touched">
+      <p class="note">合言葉は必須です。</p>
+    </div>
+    
+    <br><br>
+    <ons-button modifier="large" class="login-button" ng-click="signin(true)">認証</ons-button>
+
+    <br><br>
+    <ons-button modifier="quiet" class="forgot-password" ng-click="movePage(page.password);">合言葉を知らない人</ons-button>
+    
+    </form>
+  </div>
+
+	<br>
+
+</div>
+<ons-modal var="modal">
+  <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+  <br>
+  <br> Please wait.
+</ons-modal>
+<style>
+.login-form {
+  text-align: center;
+  width: 80%;
+  margin: 60px auto 0;
+}
+.logo {
+    width: 200px;
+    height: 200px;
+    background-image: url("img/classmate_logo.jpg");
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 1px #e9e9e9;
+}
+input[type=email], input[type=password] {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  outline: none;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.login-button {
+  width: 100%;
+  margin: 0 auto;
+  //position : absolute ;
+  //bottom : 0 ;
+}
+.forgot-password {
+  display: block;
+  margin: 8px auto 0 auto;
+  font-size: 14px;
+}
+.login-form {
+  text-align: center;
+  width: 80%;
+  margin: 60px auto 0 auto;
+}
+input[type=email], input[type=password] {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  outline: none;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.login-button {
+  width: 100%;
+  margin: 0 auto;
+}
+.forgot-password {
+  display: block;
+  margin: 8px auto 0 auto;
+  font-size: 14px;
+}
+</style>
+
+</ons-page>
