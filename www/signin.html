@@ -5,11 +5,12 @@
 <ons-page>
   <div class="signin-form">
     <form novalidate name="signinForm">    
-    <input type="email" class="text-input--underbar width-full" name="mail" ng-model="people.mail" placeholder="Mail" required ng-pattern="" value="">
-    <input type="password" class="text-input--underbar width-full" name="password" ng-model="people.password" placeholder="Password" required ng-minlength="6" ng-maxlength="20" value="">
+    <input type="email" class="text-input--underbar width-full" name="mail" ng-model="user.mail" placeholder="Mail" required ng-pattern="" value="">
+    <input type="password" class="text-input--underbar width-full" name="password" ng-model="user.password" placeholder="Password" required ng-minlength="6" ng-maxlength="20" value="">
+    <input type="password" class="text-input--underbar width-full" name="password" ng-model="user.password" placeholder="合言葉を入力！！　" required ng-maxlength="20" value="">
         <div class="lucent" ng-show="signinForm.mail.$error.required" ng-if="signinForm.mail.$touched">
-    <p class="note">メールは必須です。</p>
-    </div>
+            <p class="note">メールは必須です。</p>
+        </div>
     <div class="lucent" ng-show="signinForm.mail.$error.email" ng-if="signinForm.mail.$touched">
       <p class="note">メールアドレスは正しい形式で入力してください</p>
     </div>
@@ -19,6 +20,10 @@
     </div>
     <div class="lucent" ng-show="signinForm.password.$error.minlength" ng-if="signinForm.password.$touched">
       <p class="note">パスワードは６文字以上入力してください</p>
+    </div>
+    
+    <div class="lucent" ng-show="signinForm.password.$error.required" ng-if="signinForm.password.$touched">
+        <p class="note">合言葉は必須です。</p>
     </div>
 
     <br><br>

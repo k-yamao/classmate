@@ -2,19 +2,15 @@
 <div class="login-form">
     <div class="logo"></div>
     <br>
-    <br>
-    <br>
-    <br>
 	<div class="signin-form">
     <form novalidate name="signinForm">    
-    
-    <input type="password" class="text-input--underbar width-full" name="password" ng-model="people.password" placeholder="合言葉を入力！！　" required ng-maxlength="20" value="">
-    <div class="lucent" ng-show="signinForm.password.$error.required" ng-if="signinForm.password.$touched">
-      <p class="note">合言葉は必須です。</p>
-    </div>
-    
+        <input type="password" class="text-input--underbar width-full" name="password" ng-model="user.password" placeholder="合言葉を入力！！　" required ng-maxlength="20" value="">
+        <div class="lucent" ng-show="signinForm.password.$error.required" ng-if="signinForm.password.$touched">
+            <p class="note">合言葉は必須です。</p>
+        </div>
     <br><br>
-    <ons-button modifier="large" class="login-button" ng-click="signin(true)">認証</ons-button>
+    <button class="button button--large" ng-click="signin(true)">認証</button>
+    
 
     <br><br>
     <ons-button modifier="quiet" class="forgot-password" ng-click="movePage(page.password);">合言葉を知らない人</ons-button>
@@ -55,8 +51,7 @@ input[type=email], input[type=password] {
 .login-button {
   width: 100%;
   margin: 0 auto;
-  //position : absolute ;
-  //bottom : 0 ;
+
 }
 .forgot-password {
   display: block;

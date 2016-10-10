@@ -1,0 +1,113 @@
+<ons-toolbar>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
+    <div class="center">プロフィール</div>
+</ons-toolbar>
+<ons-page>
+    <ons-row class="profile-wrapper">
+        <ons-list-item>
+            <ons-col>
+                <img ng-src="{{user.avatarURL}}" id="picture" class="profile-image" ng-click="show('image.html');">
+            </ons-col>
+            <ons-col>
+              <button class="button--cta photo-btn photo-btn-bottom" ng-click="snapPicture(1);">カメラ</button>
+              <br />
+              <button class="button--cta photo-btn" ng-click="snapPicture(0);">ライブラリ</button>
+            </ons-col>
+        </ons-list-item>
+    </ons-row>
+    <ons-list modifier="inset" class="settings-list">
+        <ons-list-item>
+            <input type="text" class="text-input text-input--transparent" placeholder="なまえ" style="width: 100%" ng-model="user.name">
+        </ons-list-item>
+        <ons-list-item>
+            <button class="button button--large" style="margin: 0 auto;" ng-click="saveProfile();">保存</button>
+        </ons-list-item>
+    </ons-list>
+
+</ons-page>
+
+<style>
+.profile-wrapper {
+  padding: 16px 10px 0 10px;
+}
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border: inset 1px rgba(0, 0, 0, 0.3);
+}
+.profile-name {
+  font-size: 18px;
+  padding: 4px 0 2px 0;
+}
+
+.photo-btn {
+    width: 150px;
+    
+}
+.photo-btn-bottom {
+    margin-bottom: 10px;
+}
+
+.switch--list-item {
+  margin-right: 0px;
+}
+.settings-header {
+  font-weight: 500;
+  font-size: 14px;
+  opacity: 0.4;
+  padding: 10px 0 0px 10px;
+  margin-bottom: -4px;
+}
+.settings-list {
+  margin-top: 10px;
+}
+input[type=text],
+input[type=password] {
+  height: 40px;
+}
+.sex {
+    width:50%;
+    margin:8px 0px;
+    float: right;
+}
+.width-quarter {
+  width: 18%;
+  text-align: right;
+}
+.width-pref {
+  width: 70%;
+  text-align: right;
+}
+.itemlabel {
+  font-size: 15px;
+  color: #999;
+  
+}
+.appeal {
+    height: 100px;
+    width: 100%;
+}
+.dialog-list {
+    height: 300px;
+    text-align: center;
+}
+.selectColor {
+    background-color: rgba(24,103,194,0.81);
+    opacity: 0.9;
+    color: #FFF;
+}
+.dialog-image {
+     text-align: center;
+}
+.sexcheck {
+    width: 30%;
+    font-size: 15px;
+    float: right;
+    color: #999;
+}
+.nicname {
+    text-align: right;
+}
+</style>
