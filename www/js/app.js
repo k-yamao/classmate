@@ -7,8 +7,7 @@ function onDeviceReady () {
 var host = "localhost:3000";
 var host = "spika.local-c.com:3000";
 // 合言葉
-var watchword   = "a";
-var watchword   = "a";
+
 // コントローラー
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, $element, socket) {
     // document ready
@@ -35,6 +34,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         $scope.initApp();
         
     });
+    $scope.watchword = "a";
     $scope.device = {
         id : null,
     	os : ''
@@ -95,10 +95,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                         $scope.user.created   = user.created;
                                         
                                         // 合言葉が正しかったら
-                                        if($scope.user.password == watchword){
+                                        if($scope.user.password == $scope.watchword){
                                             
                                             // プロフィールが登録済みか名前でチャック
-                                            if (!angular.isUndefined($scope.user.name) && $scope.user.name != "") {
+                                            if (!angular.isUndefined($scope.user.userID) && $scope.user.userID != "") {
                                                 
                                                 indexNavigator.pushPage("main.html");
                                                 
@@ -167,7 +167,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.exeUserUpdate = function (tx) {
         tx.executeSql(
             $scope.query.updateTabelUser
-            + ' userID = "'    + $scope.user.peopleID        + '"'  
+            + ' userID = "'    + $scope.user.userID        + '"'  
             + ',name     = "'  + $scope.user.name            + '"'
             + ',password = "'  + $scope.user.password        + '"'
             + ',avatarURL = "' + $scope.user.avatarURL        + '"' 
@@ -212,13 +212,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
         setTimeout(function() {
 			
+            
 			// モーダル非表示
 			if (modalFlag) {
 				modal.hide();
 			}
-			if($scope.user.password == watchword){
+            console.log($scope.user.password);
+             console.log($scope.watchword);
+			if($scope.user.password == $scope.watchword){
+                
 				// DBへ認証OKを保存
 				$scope.updateUser();
+               
                 
                 // プロフィール
 				indexNavigator.pushPage("profile.html");
@@ -226,7 +231,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 			} else {
 				ons.notification.alert({
 					title  : '',
-					message: '合言葉が違います、だれかに聞いて？',
+					message: '合言葉が違います、同級生のだれかに聞いてください。',
 					modifier: 'material'
         		});
 				
@@ -269,7 +274,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 }, 1000);
                 return deferred.promise;
             };
-           console.log(6);
+           
         }
         
         // キュー配列        

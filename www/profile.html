@@ -3,6 +3,7 @@
     <div class="center">プロフィール</div>
 </ons-toolbar>
 <ons-page>
+        
     <ons-row class="profile-wrapper">
         <ons-list-item>
             <ons-col>
@@ -15,14 +16,34 @@
             </ons-col>
         </ons-list-item>
     </ons-row>
-    <ons-list modifier="inset" class="settings-list">
-        <ons-list-item>
-            <input type="text" class="text-input text-input--transparent" placeholder="なまえ" style="width: 100%" ng-model="user.name">
-        </ons-list-item>
-        <ons-list-item>
-            <button class="button button--large" style="margin: 0 auto;" ng-click="saveProfile();">保存</button>
-        </ons-list-item>
-    </ons-list>
+    <form novalidate name="signinForm">
+        <ons-list modifier="inset" class="settings-list">
+            <ons-list-item>
+                <input type="text" name="userID" class="text-input text-input--transparent" placeholder="ID" style="width: 100%" ng-model="user.userID" required ng-pattern="/^[a-zA-Z0-9]*$/" ng-minlength="3" ng-maxlength="10">
+            </ons-list-item>
+            <ons-list-item>
+                <input type="text" name="name" class="text-input text-input--transparent" placeholder="なまえ" style="width: 100%" ng-model="user.name" required ng-minlength="1" ng-maxlength="10">
+            </ons-list-item>
+            <ons-list-item>
+                <div class="lucent" ng-show="signinForm.userID.$error.required" ng-if="signinForm.userID.$touched">
+                    <p class="note">IDは必須です。</p>
+                </div>
+                <div class="lucent" ng-show="signinForm.userID.$error.pattern" ng-if="signinForm.userID.$touched">
+                    <p class="note">IDは半角英数で入力してください。</p>
+                </div>
+                <div class="lucent" ng-show="signinForm.userID.$error.minlength" ng-if="signinForm.userID.$touched">
+                    <p class="note">IDは3文字以上で入力してください。</p>
+                </div>
+                <div class="lucent" ng-show="signinForm.userID.$error.maxlength" ng-if="signinForm.userID.$touched">
+                    <p class="note">IDは10文字以内で入力してください。</p>
+                </div>
+                <div class="lucent" ng-show="signinForm.name.$error.required" ng-if="signinForm.name.$touched">
+                    <p class="note">なまえは必須です。</p>
+                </div>
+                <button class="button button--large" style="margin: 0 auto;" ng-disabled="!signinForm.$valid" ng-click="saveProfile();">保存</button>
+            </ons-list-item>
+        </ons-list>
+    </form>
 
 </ons-page>
 
