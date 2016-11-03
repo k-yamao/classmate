@@ -51,8 +51,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.conf = {
         "database_name"         : "database",   // DB名
         "database_version"      : "1.0",        // バージョン
-        "database_displayname"  : "chatdb",   // 表示名
-        "database_size"         : 2000000    // サイズ
+        "database_displayname"  : "classmate",   // 表示名
+        "database_size"         :  1000000    // サイズ
     };
     $scope.query = {
         checkUserTable    : 'SELECT COUNT(*) cnt FROM sqlite_master WHERE type="table" AND name="User"',
@@ -65,7 +65,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     
     $scope.initApp = function() {
+        console.log(1);
         var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
+        console.log(db);
+        
          // テーブル存在チェック
         db.transaction((function (tx) {
             // テーブルチェック
@@ -159,6 +162,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
         // データベースオブジェクト取得
         var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
+        
+        
         // スコアを更新
         db.transaction($scope.exeUserUpdate, $scope.errorDB);
        
@@ -167,12 +172,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.exeUserUpdate = function (tx) {
         tx.executeSql(
             $scope.query.updateTabelUser
-            + ' userID = "'    + $scope.user.userID        + '"'  
-            + ',name     = "'  + $scope.user.name            + '"'
-            + ',password = "'  + $scope.user.password        + '"'
-            + ',avatarURL = "' + $scope.user.avatarURL        + '"' 
-            + ',token    = "'  + $scope.user.token           + '"'
-            + ',created  = "'  + $scope.user.created         + '"'
+            + ' userID = "'    + $scope.user.userID       + '"'  
+            + ',name     = "'  + $scope.user.name         + '"'
+            + ',password = "'  + $scope.user.password     + '"'
+            + ',avatarURL = "' + $scope.user.avatarURL    + '"' 
+            + ',token    = "'  + $scope.user.token        + '"'
+            + ',created  = "'  + $scope.user.created      + '"'
         );
     };
     // データベースのエラー時の処理（アラート）
@@ -217,14 +222,13 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 			if (modalFlag) {
 				modal.hide();
 			}
-            console.log($scope.user.password);
-             console.log($scope.watchword);
+            
+            
 			if($scope.user.password == $scope.watchword){
-                
+            console.log($scope.user.password + "::" + $scope.watchword);    
 				// DBへ認証OKを保存
 				$scope.updateUser();
-               
-                
+                console.log($scope.user.password + ":::" + $scope.watchword);    
                 // プロフィール
 				indexNavigator.pushPage("profile.html");
 				
