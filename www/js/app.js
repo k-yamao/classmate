@@ -29,9 +29,67 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             if (id != undefined){
                 $scope.device.id = id;
             }
+            
         });
         
+        // 初期処理
         $scope.initApp();
+        
+         // pageがpushされてアニメーションが終了してから発火
+        indexNavigator.on('postpush', function(event) {
+
+            
+            // メインページへ遷移したあとの処理
+            if (event.enterPage.name == "main.html") {
+
+                // ニュースリストを取得
+                $scope.initNews();
+                
+                // フォトリストを取得
+                //$scope.initPhoto();
+                   
+                // アクティブなタブが変わる前
+                tabbar.on('prechange', function(event) {
+                    
+                    // フォトリストへ変更したとき
+                    if (event.index == 1) {
+                        // フォトリストを取得
+                        $scope.initPhoto();
+                    } else if (event.index == 2) {
+                        
+                    }
+                
+                });
+                                
+                // pageがpushされる直前に発火されます。
+                indexNavigator.on('prepop', function(event) {
+                    // 現在のページオブジェクトを取得する
+                    var page = event.currentPage.page; 
+                    
+                     
+                    // メイン画面からの戻るは
+                    if(page == "main.html") {
+                        event.cancel();
+                        // アプリ終了
+                        //indexNavigator.app.exitApp();
+                    }
+                });
+              
+            }
+        });
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
     });
     $scope.watchword = "a";
@@ -63,23 +121,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         updateTabelUser   : 'UPDATE User SET ',
         deleteTabelUser   : 'DELETE FROM User',
     };
-    
-    $scope.initApp = function() {
-        console.log(1);
-        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
-        console.log(db);
+    $scope.page = {
         
-         // テーブル存在チェック
+    };
+    $scope.initApp = function() {
+        // DBをオープン
+        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
+        // テーブル存在チェック
         db.transaction((function (tx) {
             // テーブルチェック
-            tx.executeSql($scope.query.checkUserTable, [], 
-                (function(tx, results) {
-                     
-                    
+            tx.executeSql($scope.query.checkUserTable, [], (function(tx, results) {
                     // Peopleテーブル存在して
                     if (results.rows.item(0).cnt > 0) {
-                        
-                       
                         // 認証処理
                         // ピープルデータ取得
                         db.transaction(
@@ -97,25 +150,19 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                         $scope.user.token     = user.token;
                                         $scope.user.created   = user.created;
                                         
+                                       
                                         // 合言葉が正しかったら
                                         if($scope.user.password == $scope.watchword){
                                             
                                             // プロフィールが登録済みか名前でチャック
                                             if (!angular.isUndefined($scope.user.userID) && $scope.user.userID != "") {
-                                                
+                                                // メインページへ遷移                                                
                                                 indexNavigator.pushPage("main.html");
-                                                
-                                                
                                             } else {
-                                                
-                                                
-                                                indexNavigator.pushPage("profile.html");
-                                                
-                                                
+                                                // 認証させる
+                                                indexNavigator.pushPage("top.html");
+
                                             }
-                                            
-                                            //
-                                            
                                             
                                         } else {
                                             // トップページでボタンを表示
@@ -199,15 +246,30 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
      *******************************************************************/
     $scope.signin = function(modalFlag){
 
+        // なまえ
+        if (angular.isUndefined($scope.user.name) || $scope.user.name == ""){
+           
+			ons.notification.alert({
+          		title  : '',
+          		message: 'なまえを入力しください',
+          		modifier: 'material'
+        	});
+            return false;
+        }
         // パスワード
         if (angular.isUndefined($scope.user.password) || $scope.user.password == ""){
            
-			ons.notification.alert({
+    		ons.notification.alert({
           		title  : '',
           		message: '合言葉を確認しください',
           		modifier: 'material'
         	});
             return false;
+        }
+        // ユーザーIDがなかったら
+        if(angular.isUndefined($scope.user.userID) || $scope.user.userID == "") {
+            // デバイスIDを設定する
+            $scope.user.userID = $scope.device.id;
         }
         
         if (modalFlag) {
@@ -216,22 +278,19 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         }
         
         setTimeout(function() {
-			
-            
-			// モーダル非表示
+
+            // モーダル非表示
 			if (modalFlag) {
 				modal.hide();
 			}
             
-            
 			if($scope.user.password == $scope.watchword){
-            console.log($scope.user.password + "::" + $scope.watchword);    
 				// DBへ認証OKを保存
 				$scope.updateUser();
-                console.log($scope.user.password + ":::" + $scope.watchword);    
                 // プロフィール
-				indexNavigator.pushPage("profile.html");
-				
+				//indexNavigator.pushPage("profile.html");
+                // メインタブへ遷移
+                indexNavigator.pushPage("main.html");
 			} else {
 				ons.notification.alert({
 					title  : '',
@@ -240,20 +299,118 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         		});
 				
 			}
-			
-			
 		}, 3000);
         
+    };
+    /******************************************************************
+     *  API URL
+     *******************************************************************/
+    $scope.api = {
+        news  : "http://miya-ko.local-c.com/api/get_posts/",
+        photo : "http://miya-ko.local-c.com/api/get_page_index/"
+    };
+    $scope.limit = 100;
+    $scope.offset = 0;
+    
+    /******************************************************************
+     *  ニュース一覧[news.html] sboard
+     *******************************************************************/
+     
+    $scope.newsList = [];
+    $scope.news =  {};
+    $scope.initNews = function() {
+        var param = {};
+
+        $scope.getList($scope.api.news, param, $scope.limit, $scope.offset, function(data) {        
+            
+            if (!angular.isUndefined(data) && data.status == "ok") {
+                $scope.newsList = data.posts;
+            }
+            
+        });
+    };
+    $scope.loadNews = function($done) {
+        
+        $timeout(function() {        
+             var param = {};
+
+             $scope.getList($scope.api.news, param, $scope.limit, $scope.offset, function(data) {        
+            
+                if (!angular.isUndefined(data) && data.status == "ok") {
+                    $scope.newsList = data.posts;
+                }
+                 // コールバックしてDONE
+                $done();
+            
+             });
+        }, 1000);
+    };
+    $scope.newsDetail = function(idx) {
+        $scope.news = $scope.newsList[idx];
+         indexNavigator.pushPage("newsDetail.html");
+    };
+    /******************************************************************
+     *  フォト一覧[photo.html] sboard
+     *******************************************************************/
+    $scope.initPhoto = function() {
+        
+        
+    };
+    $scope.loadPhoto = function($done) {
+        
+      
+    };
+    /******************************************************************
+     *  API接続GET
+     *******************************************************************/
+    $scope.getList = function (url, param, limit, offset, callback){
+
+        console.log(url + "?count=" + limit + "&offset=" + offset + $scope.getSearchParam(param));
+        $http({
+            method: 'GET',
+            url : url + "?limit=" + limit + "&offset=" + offset + $scope.getSearchParam(param),
+            headers: { 'Content-Type': 'application/json' },
+        }).success(function(data, status, headers, config) {
+
+            // ボードの処理が終わったらコールバック
+            callback(data);
+
+        }).error(function(data, status, headers, config) {
+            ons.notification.alert({
+    				title  : 'エラー',
+					message: 'データの取得に失敗しました',
+					modifier: 'material'
+        	});
+           
+        }).finally(function() {
+            // モーダル非表示
+            modal.hide();
+            
+        });
+
+    };
+     // 検索パラメーター文字列を生成
+    $scope.getSearchParam = function(param) {
+        
+        var paramText = ""
+        
+        if (!angular.isUndefined(param) || param != "") {
+            var amp   = "&";
+            for (var key in param) {
+                if (human.hasOwnProperty(key)) {
+                    var value = param[key];
+                    paramText += amp + key, "=" + value;
+                }
+            }
+        } 
+        return paramText;
     };
      /******************************************************************
      *  プロフィール登録編集[profile.html]
      *******************************************************************/
     // プロフィールを保存
     $scope.saveProfile = function() {
-
- 
-        
-        // 名前の入力チェック
+       // 名前の入力チェック
         if (!angular.isUndefined($scope.user.name) && $scope.user.name  == ""){
             ons.notification.alert({title: "入力エラー",messageHTML: "なまえを入力してください"});          
             return false;
@@ -263,7 +420,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         var promise_arr = [];
         // プロミス
         var promise = null;
-        
         
         if (!angular.isUndefined($scope.user.avatarFile) && $scope.user.avatarFile != ""){
             var fileName =  $scope.device.id  + "-" + Math.floor( new Date().getTime() / 1000 );
@@ -394,7 +550,52 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 		}
     };
 });
+/**
+ * 日付カスタム
+ * フォーマット
+ */
+module.filter('dateReplace', function() {
+    return function(input) {
+        
+        if (!angular.isUndefined(input) && input != ""){
+            return input.substring(10,-1);
+        } else {
+            return input;
+        }
+        
+    }
+});
 
+/**
+ * HTMLタグの削除
+ * フォーマット
+ */
+module.filter('removeHTML', function() {
+    return function(input) {
+        
+        if (!angular.isUndefined(input) && input != ""){
+            var txt = input.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,'');
+            txt = txt.replace(/&nbsp;/g,'');
+            return txt
+        } else {
+            return input;
+        }
+        
+    }
+});
+
+
+
+/**
+ * 改行コードをBR　変換
+ * フォーマット 2/21 13:48
+ */
+module.filter('nl2br', function($sce) {
+    return function (input, exp) {
+       var replacedHtml = input.replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+       return $sce.trustAsHtml(replacedHtml.replace(/\n|\r/g, '<br>'));
+    };
+});
 
 module.factory('socket', function ($rootScope) {
   var socket = io.connect("ws://" + host + "/spika");

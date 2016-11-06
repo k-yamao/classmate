@@ -3,8 +3,12 @@
     <div class="logo"></div>
     <br>
 	<div class="signin-form">
-    <form novalidate name="signinForm">    
+    <form novalidate name="signinForm">
+        <input type="text" class="text-input--underbar width-full" name="name" ng-model="user.name" placeholder="なまえ　" required ng-maxlength="20" value="">
         <input type="password" class="text-input--underbar width-full" name="password" ng-model="user.password" placeholder="合言葉を入力！！　" required ng-maxlength="20" value="">
+        <div class="lucent" ng-show="signinForm.name.$error.required" ng-if="signinForm.name.$touched">
+            <p class="note">なまえは必須です。</p>
+        </div>
         <div class="lucent" ng-show="signinForm.password.$error.required" ng-if="signinForm.password.$touched">
             <p class="note">合言葉は必須です。</p>
         </div>
@@ -40,7 +44,7 @@
     margin-right: auto;
     border: solid 1px #e9e9e9;
 }
-input[type=email], input[type=password] {
+input[type=text], input[type=password] {
   display: block;
   width: 100%;
   margin: 0 auto;
