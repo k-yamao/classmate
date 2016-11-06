@@ -347,7 +347,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     $scope.newsDetail = function(idx) {
         $scope.news = $scope.newsList[idx];
-         indexNavigator.pushPage("newsDetail.html");
+        indexNavigator.pushPage("newsDetail.html");
     };
     /******************************************************************
      *  フォト一覧[photo.html] sboard
