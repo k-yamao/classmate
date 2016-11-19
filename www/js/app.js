@@ -12,8 +12,7 @@ var host = "spika.local-c.com:3000";
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, $element, socket) {
     // document ready
     angular.element(document).ready(function () {
-        
-        
+
         if ( monaca.isIOS ) {
 			$scope.device.os = 'ios';
     	} else if ( monaca.isAndroid ) {
@@ -21,7 +20,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     	} else {
 			$scope.device.os = 'etc';
 		}
-        
         
         // デバイスIDを取得し、ものまねリストを取得する
         monaca.getDeviceId(function(id){
@@ -35,9 +33,23 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // 初期処理
         $scope.initApp();
         
+        // pageがpushされてアニメーションが終了してから発火
+        indexNavigator.on('postpop', function(event) {
+           if (event.enterPage.name == "photoDetail.html") {
+                $scope.photoCarouselShowFlag = false;    
+           };
+        });
+        
          // pageがpushされてアニメーションが終了してから発火
         indexNavigator.on('postpush', function(event) {
 
+            // メインページへ遷移したあとの処理
+            if (event.enterPage.name == "photoCarousel.html") {
+                // カルーセルのindexを設定
+                carousel.setActiveCarouselItemIndex($scope.photoCarouselIdx);
+                $scope.photoCarouselShowFlag = true;
+                $scope.$apply();
+            }
             
             // メインページへ遷移したあとの処理
             if (event.enterPage.name == "main.html") {
@@ -46,7 +58,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 $scope.initNews();
                 
                 // フォトリストを取得
-                //$scope.initPhoto();
+                $scope.initPhoto();
                    
                 // アクティブなタブが変わる前
                 tabbar.on('prechange', function(event) {
@@ -78,19 +90,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             }
         });
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     });
     $scope.watchword = "a";
     $scope.device = {
@@ -117,7 +116,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         dropTabelUser     : 'DROP TABLE IF EXISTS User',
         createTabelUser   : 'CREATE TABLE IF NOT EXISTS User (userID text, name text, password text, avatarURL text, token text, created text)',
         insertTabelUser   : 'INSERT INTO User (userID, name, password, avatarURL, token, created) VALUES ("","","","","","")',
-        selectTabelUser   : 'SELECT userID, name, password, avatarURL, token,created FROM User',
+        selectTabelUser   : 'SELECT userID, name, password, avatarURL, token, created FROM User',
         updateTabelUser   : 'UPDATE User SET ',
         deleteTabelUser   : 'DELETE FROM User',
     };
@@ -125,14 +124,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
     };
     $scope.initApp = function() {
+        
         // DBをオープン
         var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
+        
         // テーブル存在チェック
         db.transaction((function (tx) {
             // テーブルチェック
             tx.executeSql($scope.query.checkUserTable, [], (function(tx, results) {
-                    // Peopleテーブル存在して
+                    console.log(results.rows.item(0));
+                    // Userテーブル存在して
                     if (results.rows.item(0).cnt > 0) {
+                    //if(false){
                         // 認証処理
                         // ピープルデータ取得
                         db.transaction(
@@ -142,6 +145,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                     [], 
                                     // ピープルデータの取得に成功
                                     (function(tx, results) {
+                                        console.log(results.rows.item(0));
+                                        
+                                        
+                                        
                                         var user = results.rows.item(0);
                                         $scope.user.userID    = user.userID;
                                         $scope.user.name      = user.name;
@@ -150,7 +157,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                         $scope.user.token     = user.token;
                                         $scope.user.created   = user.created;
                                         
-                                       
+                                        //console.log(results.rows.item(0));
+                                        //console.log($scope.user.userID);
+
                                         // 合言葉が正しかったら
                                         if($scope.user.password == $scope.watchword){
                                             
@@ -161,13 +170,13 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                             } else {
                                                 // 認証させる
                                                 indexNavigator.pushPage("top.html");
-
                                             }
                                             
                                         } else {
                                             // トップページでボタンを表示
                                             $scope.signinStatus = true;
                                             $scope.$apply();   
+                                            
                                         }
                                         
                                         
@@ -206,17 +215,27 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     // ピープルテーブルの更新
     $scope.updateUser = function(){
-        
+
         // データベースオブジェクト取得
         var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
         
+        console.log("DB open update");
         
         // スコアを更新
         db.transaction($scope.exeUserUpdate, $scope.errorDB);
-       
+        
     };
     // ピープルテーブルの更新
     $scope.exeUserUpdate = function (tx) {
+         // console.log($scope.query.updateTabelUser
+         //    + ' userID = "'    + $scope.user.userID       + '"'  
+         //    + ',name     = "'  + $scope.user.name         + '"'
+         //    + ',password = "'  + $scope.user.password     + '"'
+         //    + ',avatarURL = "' + $scope.user.avatarURL    + '"' 
+         //    + ',token    = "'  + $scope.user.token        + '"'
+         //    + ',created  = "'  + $scope.user.created      + '"');
+        
+        
         tx.executeSql(
             $scope.query.updateTabelUser
             + ' userID = "'    + $scope.user.userID       + '"'  
@@ -240,6 +259,20 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     	// トップページでボタンを表示
 		$scope.signinStatus = true;
 		$scope.$apply(); 
+    };
+     // ピープルテーブルの削除
+    $scope.deleteUser = function(){
+        // データベースオブジェクト取得
+        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
+        // ピープルテーブルを削除
+        db.transaction($scope.exeUserDelete, $scope.errorDB);    
+    };
+    // ユーザーテーブルの削除
+    $scope.exeUserDelete = function (tx) {
+        tx.executeSql(
+            $scope.query.updateTabelUser
+            + ' password = ""'
+        );
     };
     /******************************************************************    
      *  サインイン[signin.html]
@@ -283,12 +316,15 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 			if (modalFlag) {
 				modal.hide();
 			}
+            console.log($scope.user.password);
             
 			if($scope.user.password == $scope.watchword){
+                console.log(11111);
+                
 				// DBへ認証OKを保存
 				$scope.updateUser();
-                // プロフィール
-				//indexNavigator.pushPage("profile.html");
+                
+                
                 // メインタブへ遷移
                 indexNavigator.pushPage("main.html");
 			} else {
@@ -302,6 +338,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 		}, 3000);
         
     };
+    
+   
     /******************************************************************
      *  API URL
      *******************************************************************/
@@ -352,13 +390,84 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     /******************************************************************
      *  フォト一覧[photo.html] sboard
      *******************************************************************/
+    $scope.photoList = [];
+    $scope.photo     = {};
+    $scope.photoRow  = {};
+    $scope.photoRowList = [];
+    $scope.photoIdx  = 0;
+    $scope.photoCarouselList = [];
+    $scope.photoCarouselIdx = 0;
+    $scope.photoCarouselShowFlag = false;
     $scope.initPhoto = function() {
-        
+        var param = {};
+
+        $scope.getList($scope.api.photo, param, $scope.limit, $scope.offset, function(data) {        
+            
+            if (!angular.isUndefined(data) && data.status == "ok") {
+                $scope.photoList = data.pages;
+            }
+            
+        });
         
     };
     $scope.loadPhoto = function($done) {
-        
+        var param = {};
+
+        $scope.getList($scope.api.photo, param, $scope.limit, $scope.offset, function(data) {        
+            
+            if (!angular.isUndefined(data) && data.status == "ok") {
+                $scope.photoList = data.pages;
+            }
+        });
       
+    };
+    $scope.photoDetail = function(idx) {
+
+        // フォト詳細のリストを初期化
+        $scope.photoRowList = [];
+        $scope.photoIdx = idx;
+        var p = $scope.photoList[$scope.photoIdx];
+        $scope.photo.title = p.title;
+        var photoSize = p.attachments.length;
+        var j = 0;
+        var photoRow = [];
+        for (var i=0 ; i<photoSize ; i++){
+            
+            var photoCol = {};
+            photoCol.idx = i;
+            photoCol.url = p.attachments[i].images.thumbnail.url;
+            photoRow[j] = photoCol;
+            
+            if (j == 2) {
+                $scope.photoRowList.push(photoRow);
+            }
+
+            ++j;
+            
+            if (j > 2) {
+                j = 0;
+                photoRow = [];
+            }
+        }
+        //console.log($scope.photoRowList.length);
+        indexNavigator.pushPage("photoDetail.html");
+    };
+    $scope.photoCarousel = function(pIdx, idx) {
+        
+        $scope.photoCarouselList = [];
+        $scope.photoCarouselIdx = idx;
+        var p = $scope.photoList[pIdx];
+        var photoSize = p.attachments.length;
+        
+        for (var i=0 ; i<photoSize ; i++){
+            var photo = {};
+            photo.idx = i;
+            photo.url = p.attachments[i].images.medium.url;
+            $scope.photoCarouselList.push(photo);
+        }
+        
+        indexNavigator.pushPage("photoCarousel.html");
+        
     };
     /******************************************************************
      *  API接続GET
@@ -405,6 +514,53 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         } 
         return paramText;
     };
+    
+     /******************************************************************
+     *  設定[setting.html] ssetting
+     *******************************************************************/
+    $scope.pushProfileEdit = function() {
+        
+        // プロフィールへ遷移
+        indexNavigator.pushPage("profile.html");
+        
+    };
+    // 利用規約
+    $scope.agreement = function() {
+       window.open('http://street.local-c.com/classmate_rule.html', '_blank', 'location=yes');
+    };
+    // プライバシーポリシー
+    $scope.privacy = function() {
+       window.open('http://street.local-c.com/classmate_privacy.html', '_blank', 'location=yes');
+    };
+    $scope.signout = function() {
+        // ピープル情報を削除
+        $scope.deleteUser();
+		// 初期起動
+		$scope.initApp();
+        
+        indexNavigator.pushPage("top.html");
+
+    };
+    $scope.mailer = function (){
+      var mail_address = 'yamao1983@i.softbank.jp';
+      var mail_content = "お問い合わせ内容を入力してメールしてください。";
+    
+      if (monaca.isAndroid === true) {
+        window.plugins.webintent.startActivity({
+          action: window.plugins.webintent.ACTION_VIEW,
+          url: 'mailto:' + mail_address + '?body=' + mail_content
+          },
+          function() {},
+          function() {}
+        );
+      } else if ( monaca.isIOS === true ) {
+        var mailto = 'mailto:yamao1983@i.softbank.jp';
+        mailto = mailto + 
+          "?subject=同窓会アプリ問い合わせ&body=お問い合わせ内容を入力してメールしてください。";
+    
+        location.href= mailto;
+      }
+    }
      /******************************************************************
      *  プロフィール登録編集[profile.html]
      *******************************************************************/
@@ -584,7 +740,15 @@ module.filter('removeHTML', function() {
     }
 });
 
-
+module.filter('substr', function() {
+    return function(input, from, to) {
+        // do some bounds checking here to ensure it has that index
+        //return input.substring(from, to);
+        var inputtext = String(input);
+        return inputtext.substring(from, to);
+        
+    }
+});
 
 /**
  * 改行コードをBR　変換

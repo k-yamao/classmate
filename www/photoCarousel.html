@@ -1,0 +1,43 @@
+<ons-toolbar>
+        <div class="left"><ons-back-button>戻る</ons-back-button></div>
+        <div class="center">{{photo.title}}</div>
+</ons-toolbar>
+<ons-page>
+<ons-carousel swipeable overscrollable auto-scroll fullscreen var="carousel" initial-index="0">
+    <ons-carousel-item style="background-color: ＃FFFFFF;" ng-repeat="photo in photoCarouselList" ng-show="photoCarouselShowFlag">
+      <div class="item-label"><img ng-src="{{photo.url}}" class="photo"/></div>
+    </ons-carousel-item>
+</ons-carousel>
+  
+    
+</ons-page>
+<style>
+
+.photo{
+ width: 100%;   
+}
+
+ons-carousel-item {
+  display: table;
+  text-align: center;
+}
+
+.item-label {
+  display: table-cell;
+  vertical-align: middle;
+  color: white;
+  line-height: 1;
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.cover-label {
+  text-align: center;
+  position: absolute;
+  left: 0px;
+  width: 100%;
+  bottom: 10px;
+  color: white;
+}
+
+</style>

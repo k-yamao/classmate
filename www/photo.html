@@ -1,18 +1,71 @@
 <ons-page>
     <ons-toolbar>
-      <div class="center">フォト</div>
+      <div class="center">PHOTO</div>
     </ons-toolbar>
+    <ons-pull-hook ng-action="loadNews($done)" var="loader">
+        <span ng-switch="loader.getCurrentState()">
+              <span ng-switch-when="initial"><ons-icon size="35px" icon="ion-arrow-down-a"></ons-icon> Pull down to refresh</span>
+            <span ng-switch-when="preaction"><ons-icon size="35px" icon="ion-arrow-up-a"></ons-icon> Release to refresh</span>
+            <span ng-switch-when="action"><ons-icon size="35px" spin="true" icon="ion-load-d"></ons-icon> Loading data...</span>
+        </span>
+    </ons-pull-hook>
+    <ons-list>
+        <ons-list-item modifier="chevron" class="list-item-container" ng-repeat="item in photoList" ng-click="photoDetail($index)">
+          <ons-row>
+            <ons-col width="95px">
+               <img ng-src="{{item.attachments[0].images.thumbnail.url}}" class="thumbnail">
+            </ons-col>
+            <ons-col>
+              <div class="name">
+                {{item.title}}
+              </div>
+              <div class="location">
+                <i class="fa fa-calendar">{{item.date|dateReplace}}</i>
+              </div>
+              <div class="desc">
+                {{item.content | removeHTML | substr:0:35}}
+              </div>
+            </ons-col>
+            <ons-col width="40px"></ons-col>
+          </ons-row>
+        </ons-list-item>
 
-    <p style="text-align: center;">
-      This is the second page.
-    </p>
-    
-    <ons-carousel initial-index="0" fullscreen swipeable overscrollable auto-scroll>
-  <ons-carousel-item>
-     Carousel Item 1
-  </ons-carousel-item>
-  <ons-carousel-item>
-     Carousel Item 2
-  </ons-carousel-item>
-</ons-carousel>
 </ons-page>
+<ons-modal var="modal">
+    <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+    <br>
+    <br> ネットワークに接続してください
+</ons-modal>
+ 
+<style>
+.list-item-container {
+  line-height: 1;
+  padding: 15px 0px 15px 15px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+
+.name {
+  font-weight: 500;
+  line-height: 16px;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.location {
+  font-size: 14px;
+  opacity: 0.4;
+  margin-bottom: 6px;
+}
+
+.desc {
+  line-height: 1.2;
+  font-size: 13px;
+}
+
+</style>

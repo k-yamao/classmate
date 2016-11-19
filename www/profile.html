@@ -3,48 +3,33 @@
     <div class="center">プロフィール</div>
 </ons-toolbar>
 <ons-page>
-        
     <ons-row class="profile-wrapper">
-        <ons-list-item>
-            <ons-col>
-                <img ng-src="{{user.avatarURL}}" id="picture" class="profile-image" ng-click="show('image.html');">
-            </ons-col>
-            <ons-col>
-              <button class="button--cta photo-btn photo-btn-bottom" ng-click="snapPicture(1);">カメラ</button>
-              <br />
-              <button class="button--cta photo-btn" ng-click="snapPicture(0);">ライブラリ</button>
-            </ons-col>
-        </ons-list-item>
+        <ons-col>
+            <img ng-src="{{user.avatarURL}}" id="picture" class="profile-image" ng-click="show('image.html');">
+        </ons-col>
+        <ons-col>
+            <ons-row class="photo-btn-row">
+                <button class="button--cta photo-btn" ng-click="snapPicture(1);">カメラ</button>
+            </ons-row>
+            <ons-row class="photo-btn-row">
+                <button class="button--cta photo-btn" ng-click="snapPicture(0);">ライブラリ</button>
+            </ons-row>
+        </ons-col>
     </ons-row>
     <form novalidate name="signinForm">
         <ons-list modifier="inset" class="settings-list">
             <ons-list-item>
-                <input type="text" name="userID" class="text-input text-input--transparent" placeholder="ID" style="width: 100%" ng-model="user.userID" required ng-pattern="/^[a-zA-Z0-9]*$/" ng-minlength="3" ng-maxlength="10">
-            </ons-list-item>
-            <ons-list-item>
                 <input type="text" name="name" class="text-input text-input--transparent" placeholder="なまえ" style="width: 100%" ng-model="user.name" required ng-minlength="1" ng-maxlength="10">
             </ons-list-item>
-            <ons-list-item>
-                <div class="lucent" ng-show="signinForm.userID.$error.required" ng-if="signinForm.userID.$touched">
-                    <p class="note">IDは必須です。</p>
-                </div>
-                <div class="lucent" ng-show="signinForm.userID.$error.pattern" ng-if="signinForm.userID.$touched">
-                    <p class="note">IDは半角英数で入力してください。</p>
-                </div>
-                <div class="lucent" ng-show="signinForm.userID.$error.minlength" ng-if="signinForm.userID.$touched">
-                    <p class="note">IDは3文字以上で入力してください。</p>
-                </div>
-                <div class="lucent" ng-show="signinForm.userID.$error.maxlength" ng-if="signinForm.userID.$touched">
-                    <p class="note">IDは10文字以内で入力してください。</p>
-                </div>
-                <div class="lucent" ng-show="signinForm.name.$error.required" ng-if="signinForm.name.$touched">
-                    <p class="note">なまえは必須です。</p>
-                </div>
-                <button class="button button--large" style="margin: 0 auto;" ng-disabled="!signinForm.$valid" ng-click="saveProfile();">保存</button>
-            </ons-list-item>
+           
         </ons-list>
+        <ons-row class="form-row">
+        <button class="button  button--large" ng-disabled="!signinForm.$valid" ng-click="saveProfile();">登録</button>
+        </ons-row>
+        <ons-row class="form-row" ng-show="signinForm.name.$error.required" ng-if="signinForm.name.$touched">
+            <p class="note">なまえは必須です。</p>
+        </ons-row>
     </form>
-
 </ons-page>
 
 <style>
@@ -52,8 +37,8 @@
   padding: 16px 10px 0 10px;
 }
 .profile-image {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 4px;
   -webkit-border-radius: 4px;
   border: inset 1px rgba(0, 0, 0, 0.3);
@@ -64,11 +49,20 @@
 }
 
 .photo-btn {
-    width: 150px;
-    
+    width: 180px;
+    height: 40px;
 }
-.photo-btn-bottom {
-    margin-bottom: 10px;
+.photo-btn-row{
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+.form-row{
+   padding-top: 25px;
+   padding-bottom: 25px;
+   padding-right: 10px;
+   padding-left: 10px;
 }
 
 .switch--list-item {
@@ -84,15 +78,12 @@
 .settings-list {
   margin-top: 10px;
 }
+
 input[type=text],
 input[type=password] {
   height: 40px;
 }
-.sex {
-    width:50%;
-    margin:8px 0px;
-    float: right;
-}
+
 .width-quarter {
   width: 18%;
   text-align: right;
@@ -119,15 +110,7 @@ input[type=password] {
     opacity: 0.9;
     color: #FFF;
 }
-.dialog-image {
-     text-align: center;
-}
-.sexcheck {
-    width: 30%;
-    font-size: 15px;
-    float: right;
-    color: #999;
-}
+
 .nicname {
     text-align: right;
 }
