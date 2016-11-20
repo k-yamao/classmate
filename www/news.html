@@ -20,11 +20,11 @@
                 {{item.title}}
               </div>
               <div class="location">
-                <i class="fa fa-calendar">{{item.date|dateReplace}}</i>
+                <i class="fa fa-calendar">&nbsp;{{item.date|dateReplace}}</i>
               </div>
-              <div class="desc">
+              <!--div class="desc">
                 {{item.content | removeHTML | substr:0:35}}
-              </div>
+              </div-->
             </ons-col>
             <ons-col width="40px"></ons-col>
           </ons-row>
@@ -44,8 +44,8 @@
 }
 
 .thumbnail {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 4px;
   -webkit-border-radius: 4px;
 }

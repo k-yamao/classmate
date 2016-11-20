@@ -27,7 +27,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             if (id != undefined){
                 $scope.device.id = id;
             }
-            
         });
         
         // 初期処理
@@ -91,6 +90,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         });
         
     });
+    $scope.topshow = false;
     $scope.watchword = "a";
     $scope.device = {
         id : null,
@@ -168,13 +168,17 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                                 // メインページへ遷移                                                
                                                 indexNavigator.pushPage("main.html");
                                             } else {
+                                                $scope.topshow = true;
                                                 // 認証させる
                                                 indexNavigator.pushPage("top.html");
+                                                $scope.topshow = true;
+                                                $scope.$apply();
                                             }
                                             
                                         } else {
                                             // トップページでボタンを表示
-                                            $scope.signinStatus = true;
+                                            
+                                            $scope.topshow = true;
                                             $scope.$apply();   
                                             
                                         }
@@ -202,7 +206,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                         (function(tx, results) {    // テーブル作成、空レコード作成成功
 
                             // トップページでボタンを表示
-                            $scope.signinStatus = true;
+                            $scope.topshow = true;
                             $scope.$apply(); 
                         }));
                             
@@ -257,7 +261,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
         
     	// トップページでボタンを表示
-		$scope.signinStatus = true;
+		$scope.topshow = true;
 		$scope.$apply(); 
     };
      // ピープルテーブルの削除
