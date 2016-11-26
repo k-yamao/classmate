@@ -1,0 +1,23 @@
+{
+	"data":[
+		{
+			"sID"  :"0",
+			"sName":"呉宮原高校2002年卒",
+			"sURL":"http://miya-ko.local-c.com/",
+			"sPass":"KITAO"
+		},
+		{
+			"sID"  :"1",
+			"sName":"安浦中学校1999年卒",
+			"sURL":"http://yasuchu.local-c.com/",
+			"sPass":"A"
+		},
+		{
+			"sID"  :"2",
+			"sName":"呉宮原高校2000年卒",
+			"sURL":"http://yasuchu.local-c.com/",
+			"sPass":"A"
+		}
+	]
+	
+}
