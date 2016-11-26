@@ -13,6 +13,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // document ready
     angular.element(document).ready(function () {
 
+        console.log("document ready");
         if ( monaca.isIOS ) {
 			$scope.device.os = 'ios';
     	} else if ( monaca.isAndroid ) {
@@ -29,8 +30,17 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             }
         });
         
-        // 初期処理
-        $scope.initApp();
+       
+        
+        // 初期処理 学校のJSON取得
+        $scope.initSchool(function(){
+            
+            
+            
+            // 初期処理
+            $scope.initApp();
+            
+        });
         
         // pageがpushされてアニメーションが終了してから発火
         indexNavigator.on('postpop', function(event) {
@@ -91,7 +101,21 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
     });
     $scope.topshow = false;
-    $scope.watchword = "a";
+    $scope.schoolYearList = [
+        {
+            sID  :"1",
+            sName:"呉宮原高校2002年卒",
+            sURL:"http://miya-ko.local-c.com/",
+            sPass:"kitao"
+        }
+    ];
+    $scope.schoolYear =  {
+            sID  :"1",
+            sName:"呉宮原高校2002年卒",
+            sURL:"http://miya-ko.local-c.com/",
+            sPass:"kitao"
+    };
+    $scope.watchword = "KITAO";
     $scope.device = {
         id : null,
     	os : ''
@@ -103,7 +127,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         avatarURL  : "http://file.local-c.com/uploads/mimicry/noimage.png",
         avatarFile : "",
         token      : "",
-        created    : ""
+        created    : "",
+        sID        : "",
+        sName      : ""
     };
     $scope.conf = {
         "database_name"         : "database",   // DB名
@@ -114,9 +140,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.query = {
         checkUserTable    : 'SELECT COUNT(*) cnt FROM sqlite_master WHERE type="table" AND name="User"',
         dropTabelUser     : 'DROP TABLE IF EXISTS User',
-        createTabelUser   : 'CREATE TABLE IF NOT EXISTS User (userID text, name text, password text, avatarURL text, token text, created text)',
-        insertTabelUser   : 'INSERT INTO User (userID, name, password, avatarURL, token, created) VALUES ("","","","","","")',
-        selectTabelUser   : 'SELECT userID, name, password, avatarURL, token, created FROM User',
+        createTabelUser   : 'CREATE TABLE IF NOT EXISTS User (userID text, name text, password text, avatarURL text, token text, created text, sID text)',
+        insertTabelUser   : 'INSERT INTO User (userID, name, password, avatarURL, token, created, sID) VALUES ("","","","","","","")',
+        selectTabelUser   : 'SELECT userID, name, password, avatarURL, token, created, sID FROM User',
         updateTabelUser   : 'UPDATE User SET ',
         deleteTabelUser   : 'DELETE FROM User',
     };
@@ -132,10 +158,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         db.transaction((function (tx) {
             // テーブルチェック
             tx.executeSql($scope.query.checkUserTable, [], (function(tx, results) {
-                    console.log(results.rows.item(0));
+                
                     // Userテーブル存在して
                     if (results.rows.item(0).cnt > 0) {
                     //if(false){
+                        
                         // 認証処理
                         // ピープルデータ取得
                         db.transaction(
@@ -145,23 +172,31 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                     [], 
                                     // ピープルデータの取得に成功
                                     (function(tx, results) {
-                                        console.log(results.rows.item(0));
-                                        
                                         
                                         
                                         var user = results.rows.item(0);
+                                        
                                         $scope.user.userID    = user.userID;
                                         $scope.user.name      = user.name;
                                         $scope.user.password  = user.password;
                                         $scope.user.avatarURL = user.avatarURL == "" ? "http://file.local-c.com/uploads/mimicry/noimage.png" : user.avatarURL;
                                         $scope.user.token     = user.token;
                                         $scope.user.created   = user.created;
-                                        
-                                        //console.log(results.rows.item(0));
-                                        //console.log($scope.user.userID);
+                                        $scope.user.sID       = user.sID;
+
+
+
+                                        if (!angular.isUndefined($scope.user.sID) && $scope.user.sID != "" ) {
+                                            $scope.schoolYear = $scope.schoolYearList[$scope.user.sID];
+                                        }
 
                                         // 合言葉が正しかったら
-                                        if($scope.user.password == $scope.watchword){
+                                        if($scope.user.password != "" && $scope.user.password != $scope.schoolYearList[$scope.user.sID]){
+                                            
+                                            if (!angular.isUndefined($scope.schoolYearList[$scope.user.sID]) && $scope.schoolYearList[$scope.user.sID].sName != "") {
+                                                $scope.user.sName = $scope.schoolYearList[$scope.user.sID].sName;    
+                                            }
+                                            
                                             
                                             // プロフィールが登録済みか名前でチャック
                                             if (!angular.isUndefined($scope.user.userID) && $scope.user.userID != "") {
@@ -176,8 +211,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                             }
                                             
                                         } else {
-                                            // トップページでボタンを表示
                                             
+                                            if (!angular.isUndefined($scope.schoolYearList[$scope.user.sID]) && $scope.schoolYearList[$scope.user.sID].sName != "") {
+                                                $scope.user.sName = $scope.schoolYearList[$scope.user.sID].sName;    
+                                            }
+                                            
+                                            // トップページでボタンを表示
                                             $scope.topshow = true;
                                             $scope.$apply();   
                                             
@@ -223,7 +262,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // データベースオブジェクト取得
         var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
         
-        console.log("DB open update");
+        //console.log("DB open update");
         
         // スコアを更新
         db.transaction($scope.exeUserUpdate, $scope.errorDB);
@@ -248,6 +287,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             + ',avatarURL = "' + $scope.user.avatarURL    + '"' 
             + ',token    = "'  + $scope.user.token        + '"'
             + ',created  = "'  + $scope.user.created      + '"'
+            + ',sID  = "'      + $scope.user.sID          + '"'
         );
     };
     // データベースのエラー時の処理（アラート）
@@ -281,13 +321,52 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     /******************************************************************    
      *  サインイン[signin.html]
      *******************************************************************/
+    
+    $scope.newClassmate = function(callback) {
+      
+      var mail_address = 'info@local-c.com';
+      var mail_content = "新規同窓会登録";
+    
+      if (monaca.isAndroid === true) {
+        window.plugins.webintent.startActivity({
+          action: window.plugins.webintent.ACTION_VIEW,
+          url: 'mailto:' + mail_address + '?body=' + mail_content
+          },
+          function() {},
+          function() {}
+        );
+      } else if ( monaca.isIOS === true ) {
+        var mailto = 'mailto:' + mail_address;
+        mailto = mailto + 
+          "?subject=新規同窓会登録&body=同窓会タイトル：□□□、認証キワード：□□□¥nを記載してメールを頂けますでしょうか。コンテツの登録について登録方法をご連絡いたします。";
+    
+        location.href= mailto;
+      }
+      
+        
+    };
+    $scope.initSchool = function(callback) {
+
+        var param = {};
+        $scope.getList($scope.api.school, param, $scope.limit, $scope.offset, function(data) {        
+
+            if (!angular.isUndefined(data)) {
+                
+                 $scope.schoolYearList = data.data;
+                 
+                 callback();
+            }
+            
+        });
+    };
+     
     $scope.signin = function(modalFlag){
 
         // なまえ
         if (angular.isUndefined($scope.user.name) || $scope.user.name == ""){
            
 			ons.notification.alert({
-          		title  : '',
+          		title  : 'エラー',
           		message: 'なまえを入力しください',
           		modifier: 'material'
         	});
@@ -297,11 +376,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         if (angular.isUndefined($scope.user.password) || $scope.user.password == ""){
            
     		ons.notification.alert({
-          		title  : '',
-          		message: '合言葉を確認しください',
+          		title  : 'エラー',
+          		message: '認証キーワードを入力してください',
           		modifier: 'material'
         	});
             return false;
+            
         }
         // ユーザーIDがなかったら
         if(angular.isUndefined($scope.user.userID) || $scope.user.userID == "") {
@@ -320,10 +400,14 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 			if (modalFlag) {
 				modal.hide();
 			}
-            console.log($scope.user.password);
             
-			if($scope.user.password == $scope.watchword){
-                console.log(11111);
+            // 大文字に変換
+            $scope.user.password = $scope.user.password.toUpperCase();
+            
+            console.log($scope.schoolYear);
+            
+            
+			if($scope.user.password == $scope.schoolYear.sPass){
                 
 				// DBへ認証OKを保存
 				$scope.updateUser();
@@ -333,8 +417,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 indexNavigator.pushPage("main.html");
 			} else {
 				ons.notification.alert({
-					title  : '',
-					message: '合言葉が違います、同級生のだれかに聞いてください。',
+					title  : '認証に失敗',
+					message: '認証キーワードが正しくありません。',
 					modifier: 'material'
         		});
 				
@@ -344,10 +428,35 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     
    
+    $scope.dialogs = {};
+    $scope.show = function(dlg) {
+        if (!$scope.dialogs[dlg]) {
+          ons.createDialog(dlg).then(function(dialog) {
+            $scope.dialogs[dlg] = dialog;
+            dialog.show();
+          });
+        } else {
+          $scope.dialogs[dlg].show();
+        }
+    };
+    // 生年月日を設定
+    $scope.setSchoolYear = function(item){
+
+        $scope.schoolYear = item;
+        $scope.user.sName = item.sName;
+        $scope.user.sID = item.sID;
+        $scope.api.news = item.sURL + "/api/get_posts/";
+        $scope.api.photo = item.sURL + "/api/get_page_index/";
+        // ダイアログ非表示
+        $scope.dialog.hide();
+       
+        
+    };
     /******************************************************************
      *  API URL
      *******************************************************************/
     $scope.api = {
+        school: "http://classmate.local-c.com/classmate.json",
         news  : "http://miya-ko.local-c.com/api/get_posts/",
         photo : "http://miya-ko.local-c.com/api/get_page_index/"
     };
@@ -478,7 +587,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
      *******************************************************************/
     $scope.getList = function (url, param, limit, offset, callback){
 
-        console.log(url + "?count=" + limit + "&offset=" + offset + $scope.getSearchParam(param));
         $http({
             method: 'GET',
             url : url + "?limit=" + limit + "&offset=" + offset + $scope.getSearchParam(param),
@@ -564,7 +672,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     
         location.href= mailto;
       }
-    }
+    };
      /******************************************************************
      *  プロフィール登録編集[profile.html]
      *******************************************************************/
@@ -584,7 +692,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         if (!angular.isUndefined($scope.user.avatarFile) && $scope.user.avatarFile != ""){
             var fileName =  $scope.device.id  + "-" + Math.floor( new Date().getTime() / 1000 );
             promise = $scope.uploadFile($scope.user.avatarFile, 1, fileName, "");
-            console.log(5);
         } else {
             promise = function() {
                 var deferred = $q.defer();
