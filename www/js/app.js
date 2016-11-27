@@ -30,12 +30,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             }
         });
         
-       
-        
         // 初期処理 学校のJSON取得
         $scope.initSchool(function(){
-            
-            
             
             // 初期処理
             $scope.initApp();
@@ -184,19 +180,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                         $scope.user.created   = user.created;
                                         $scope.user.sID       = user.sID;
 
-
-
                                         if (!angular.isUndefined($scope.user.sID) && $scope.user.sID != "" ) {
-                                            $scope.schoolYear = $scope.schoolYearList[$scope.user.sID];
+                                            $scope.setSchoolYearItem($scope.schoolYearList[$scope.user.sID]);
                                         }
 
                                         // 合言葉が正しかったら
                                         if($scope.user.password != "" && $scope.user.password != $scope.schoolYearList[$scope.user.sID]){
-                                            
-                                            if (!angular.isUndefined($scope.schoolYearList[$scope.user.sID]) && $scope.schoolYearList[$scope.user.sID].sName != "") {
-                                                $scope.user.sName = $scope.schoolYearList[$scope.user.sID].sName;    
-                                            }
-                                            
                                             
                                             // プロフィールが登録済みか名前でチャック
                                             if (!angular.isUndefined($scope.user.userID) && $scope.user.userID != "") {
@@ -211,10 +200,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                             }
                                             
                                         } else {
-                                            
-                                            if (!angular.isUndefined($scope.schoolYearList[$scope.user.sID]) && $scope.schoolYearList[$scope.user.sID].sName != "") {
-                                                $scope.user.sName = $scope.schoolYearList[$scope.user.sID].sName;    
-                                            }
                                             
                                             // トップページでボタンを表示
                                             $scope.topshow = true;
@@ -338,7 +323,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
       } else if ( monaca.isIOS === true ) {
         var mailto = 'mailto:' + mail_address;
         mailto = mailto + 
-          "?subject=新規同窓会登録&body=同窓会タイトル：□□□、認証キワード：□□□¥nを記載してメールを頂けますでしょうか。コンテツの登録について登録方法をご連絡いたします。";
+          "?subject=新規同窓会登録&body=同窓会タイトル：□□□、認証キワード：□□□¥nを記載してメールを頂けますでしょうか。コンテンツの登録について登録方法をご連絡いたします。新規登録には5日程度お時間を頂く場合もあります。";
     
         location.href= mailto;
       }
@@ -362,6 +347,16 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
      
     $scope.signin = function(modalFlag){
 
+        // なまえ
+        if (angular.isUndefined($scope.user.sName) || $scope.user.sName == ""){
+           
+    		ons.notification.alert({
+          		title  : 'エラー',
+          		message: '学校、卒業年を選択しください',
+          		modifier: 'material'
+        	});
+            return false;
+        }
         // なまえ
         if (angular.isUndefined($scope.user.name) || $scope.user.name == ""){
            
@@ -404,10 +399,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             // 大文字に変換
             $scope.user.password = $scope.user.password.toUpperCase();
             
-            console.log($scope.schoolYear);
-            
             
 			if($scope.user.password == $scope.schoolYear.sPass){
+                
+                
+                //console.log($scope.user);
+                
                 
 				// DBへ認証OKを保存
 				$scope.updateUser();
@@ -441,15 +438,21 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     // 生年月日を設定
     $scope.setSchoolYear = function(item){
+        // データを設定
+        $scope.setSchoolYearItem(item);
+        // ダイアログ非表示
+        $scope.dialog.hide();
+        
+    };
+    // 生年月日を設定
+    $scope.setSchoolYearItem = function(item){
 
         $scope.schoolYear = item;
         $scope.user.sName = item.sName;
         $scope.user.sID = item.sID;
-        $scope.api.news = item.sURL + "/api/get_posts/";
-        $scope.api.photo = item.sURL + "/api/get_page_index/";
-        // ダイアログ非表示
-        $scope.dialog.hide();
-       
+        $scope.api.news = item.sURL + "api/get_posts/";
+        $scope.api.photo = item.sURL + "api/get_page_index/";
+        
         
     };
     /******************************************************************
